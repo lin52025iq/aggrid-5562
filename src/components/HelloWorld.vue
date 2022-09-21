@@ -23,6 +23,10 @@ export default {
     return {
       gridOptions: {
         domLayout: "print",
+        defaultColDef: {
+          autoHeight: true,
+          cellClass: "cell-wrap-text",
+        },
       },
       gridApi: null,
       columnApi: null,
@@ -73,5 +77,10 @@ export default {
   width: calc(100vw - 80px);
   height: calc(100vh - 90px);
   padding: 40px 45px;
+}
+
+.cell-wrap-text {
+  white-space: normal !important;
+  word-break: break-word;
 }
 </style>
