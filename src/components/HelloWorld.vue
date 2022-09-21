@@ -1,58 +1,77 @@
 <template>
-  <div class="hello">
-    <h1>{{ msg }}</h1>
-    <p>
-      For a guide and recipes on how to configure / customize this project,<br>
-      check out the
-      <a href="https://cli.vuejs.org" target="_blank" rel="noopener">vue-cli documentation</a>.
-    </p>
-    <h3>Installed CLI Plugins</h3>
-    <ul>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-babel" target="_blank" rel="noopener">babel</a></li>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-eslint" target="_blank" rel="noopener">eslint</a></li>
-    </ul>
-    <h3>Essential Links</h3>
-    <ul>
-      <li><a href="https://vuejs.org" target="_blank" rel="noopener">Core Docs</a></li>
-      <li><a href="https://forum.vuejs.org" target="_blank" rel="noopener">Forum</a></li>
-      <li><a href="https://chat.vuejs.org" target="_blank" rel="noopener">Community Chat</a></li>
-      <li><a href="https://twitter.com/vuejs" target="_blank" rel="noopener">Twitter</a></li>
-      <li><a href="https://news.vuejs.org" target="_blank" rel="noopener">News</a></li>
-    </ul>
-    <h3>Ecosystem</h3>
-    <ul>
-      <li><a href="https://router.vuejs.org" target="_blank" rel="noopener">vue-router</a></li>
-      <li><a href="https://vuex.vuejs.org" target="_blank" rel="noopener">vuex</a></li>
-      <li><a href="https://github.com/vuejs/vue-devtools#vue-devtools" target="_blank" rel="noopener">vue-devtools</a></li>
-      <li><a href="https://vue-loader.vuejs.org" target="_blank" rel="noopener">vue-loader</a></li>
-      <li><a href="https://github.com/vuejs/awesome-vue" target="_blank" rel="noopener">awesome-vue</a></li>
-    </ul>
+  <div class="aggrid-container">
+    <ag-grid-vue
+      :grid-options="gridOptions"
+      :row-data="tableData.rowData"
+      :column-defs="tableData.columnDefs"
+      :framework-components="tableData.frameworkComponents"
+      :is-full-width-cell="isFullWidthCell"
+      :full-width-cell-renderer="'FullWidthCellRenderer'"
+      style="height: 100%"
+      class="ag-theme-alpine"
+      @grid-ready="onGridReady"
+    />
   </div>
 </template>
 
 <script>
+import FullWidthCellRenderer from "./FullWidthCellRenderer.vue";
+import MockData from '../data/data.json'
 export default {
-  name: 'HelloWorld',
-  props: {
-    msg: String
-  }
-}
+  name: "HelloWorld",
+  data() {
+    return {
+      gridOptions: {
+        domLayout: "print",
+      },
+      gridApi: null,
+      columnApi: null,
+      tableData: {
+        rowData: [],
+        columnDefs: [],
+        frameworkComponents: { FullWidthCellRenderer },
+      },
+    };
+  },
+  beforeMount() {
+    this.tableData.columnDefs = [
+      {
+        field: "athlete",
+        width: 200,
+      },
+      { field: "age", width: 100 },
+      { field: "country" },
+      {
+        field: "date",
+        // colSpan: (params) => (params.data.year <= 2004 ? 2 : 1),
+      },
+      { field: "year", width: 100 },
+      { field: "sport" },
+      // { field: "gold" },
+      // { field: "silver" },
+      // { field: "bronze" },
+      // { field: "total" },
+    ];
+  },
+  methods: {
+    isFullWidthCell(params) {
+      return !params.rowIndex % 10;
+    },
+    onGridReady(grid) {
+      this.gridApi = grid.api;
+      this.columnApi = grid.columnApi;
+      this.tableData.rowData = MockData;
+    },
+  },
+};
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped lang="scss">
-h3 {
-  margin: 40px 0 0;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0 10px;
-}
-a {
-  color: #42b983;
+<style lang="scss">
+@import "~ag-grid-community/src/styles/ag-grid.scss";
+@import "~ag-grid-community/src/styles/ag-theme-alpine/sass/ag-theme-alpine.scss";
+.aggrid-container {
+  width: calc(100vw - 80px);
+  height: calc(100vh - 90px);
+  padding: 40px 45px;
 }
 </style>
